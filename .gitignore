@@ -1,0 +1,6 @@
+# Environments
+venv/
+.env
+
+# Temp files
+tempCodeRunnerFile.py
