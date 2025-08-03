@@ -1,12 +1,11 @@
+# requirements.txt (Cleaned Version)
 fastapi
 uvicorn
 python-dotenv
 langchain
 langchain-google-genai
-google-generativeai
 sentence-transformers
 astrapy>=0.7.0
 langchain-astradb>=0.1.0
 langchain-community
-langchain-huggingface
 numpy==1.26.4

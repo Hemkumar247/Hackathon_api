@@ -1,24 +1,22 @@
 # main.py (Final Production-Ready Version)
 import os
 import traceback
-from fastapi import FastAPI, HTTPException # pyright: ignore[reportMissingImports]
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict, Any
 from dotenv import load_dotenv
 
-# Import LangChain components
+# Import LangChain components with the correct, modern paths
 from langchain_google_genai import GoogleGenerativeAI
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain_astradb import AstraDBVectorStore # type: ignore
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_astradb import AstraDBVectorStore
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
 # --- Load Environment Variables ---
-# This loads the secrets from your .env file
 load_dotenv()
 
-# --- Pydantic Models for API Request and Response ---
-# This defines the structure of the JSON your API will expect and return.
+# --- Pydantic Models for API ---
 class Query(BaseModel):
     question: str
 
@@ -30,11 +28,11 @@ class RAGResponse(BaseModel):
     answer: str
     source_documents: List[SourceDocument]
 
-# --- Initialize the FastAPI App ---
+# --- Initialize FastAPI App ---
 app = FastAPI(
     title="HackRx RAG API",
     description="An API for the HackRx 6.0 hackathon to query documents using RAG.",
-    version="2.0.1" # Updated version
+    version="3.0.0" # Final version
 )
 
 # --- Load Models and RAG Chain (This happens only once on startup) ---
@@ -45,15 +43,17 @@ try:
     # Initialize the Embedding Model
     embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
-    # Initialize the Astra DB Vector Store
+    # **THE FIX IS HERE**: We now connect to an EXISTING collection
+    # This code will NOT try to create a new one.
     vector_store = AstraDBVectorStore(
         embedding=embedding_model,
-        collection_name="my_rag_collection", # Use the same collection name as in your Colab notebook
+        collection_name="my_rag_collection",
         api_endpoint=os.getenv("ASTRA_DB_API_ENDPOINT"),
         token=os.getenv("ASTRA_DB_APPLICATION_TOKEN"),
     )
+    print("--- STARTUP: Successfully connected to Astra DB collection. ---")
 
-    # Initialize the LLM with the latest, most compatible model name
+    # Initialize the LLM
     llm = GoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.7)
 
     # Create the RAG Prompt Template
@@ -92,24 +92,16 @@ except Exception as e:
 # --- API Endpoint ---
 @app.post("/ask", response_model=RAGResponse)
 async def ask_question(query: Query):
-    """
-    Accepts a question in a JSON payload, processes it with the RAG chain,
-    and returns the answer and source documents in JSON format.
-    """
     if not qa_chain:
         raise HTTPException(status_code=500, detail="RAG chain is not available due to a startup error.")
 
     try:
-        # Use the modern .invoke() method to run the chain
         result = qa_chain.invoke({"query": query.question})
-        
-        # Structure the response according to our Pydantic model
         response_data = {
             "answer": result["result"],
             "source_documents": result["source_documents"]
         }
         return response_data
-
     except Exception as e:
         print("\n--- EXCEPTION IN /ask ---")
         traceback.print_exc()
