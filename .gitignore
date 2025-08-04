@@ -4,3 +4,6 @@ venv/
 
 # Temp files
 tempCodeRunnerFile.py
+
+# Python cache
+__pycache__/

@@ -1,12 +1,10 @@
 fastapi
-uvicorn[standard]
+uvicorn
 python-dotenv
 langchain
 langchain-google-genai
-langchain-community
-langchain-astradb
 sentence-transformers
-pdfminer.six
-requests
+langchain-community
+numpy==1.26.4
 pypdf
-faiss-cpu
+requests
