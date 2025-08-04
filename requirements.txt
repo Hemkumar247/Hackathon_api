@@ -1,11 +1,12 @@
-# requirements.txt (Cleaned Version)
 fastapi
-uvicorn
+uvicorn[standard]
 python-dotenv
 langchain
 langchain-google-genai
-sentence-transformers
-astrapy>=0.7.0
-langchain-astradb>=0.1.0
 langchain-community
-numpy==1.26.4
+langchain-astradb
+sentence-transformers
+pdfminer.six
+requests
+pypdf
+faiss-cpu
