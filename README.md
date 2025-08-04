@@ -1,29 +1,31 @@
-# HackRx RAG API
+# High-Accuracy HackRx RAG API
 
 ## Description
 
-This project is a FastAPI-based API developed for the HackRx 6.0 hackathon. It implements a Retrieval-Augmented Generation (RAG) system to answer questions based on a provided set of documents. The API leverages large language models (LLMs) and a vector database to provide accurate, context-aware answers.
+This project is an advanced FastAPI-based API developed for the HackRx 6.0 hackathon. It implements a dynamic Retrieval-Augmented Generation (RAG) system that can analyze any PDF document from a URL and answer questions based *only* on the content within that document.
+
+The API is designed for high accuracy, ensuring that answers are strictly derived from the provided document and preventing the model from using external knowledge.
 
 ## Features
 
-- **RAG Implementation**: Utilizes a RAG pipeline to retrieve relevant document snippets and generate answers.
-- **FastAPI Backend**: A robust and fast API server built with FastAPI.
-- **Vector Database**: Uses AstraDB as a vector store for efficient document retrieval.
-- **LLM Integration**: Powered by Google's Gemini models for generative capabilities.
-- **Sentence Transformers**: Employs Hugging Face's sentence transformers for creating document embeddings.
-- **Environment-based Configuration**: Securely manages credentials and settings using a `.env` file.
+-   **Dynamic Document Processing**: Ingests PDFs directly from a URL for on-the-fly analysis.
+-   **In-Memory Vector Store**: Creates a temporary, request-specific `FAISS` vector store for fast and efficient semantic search.
+-   **High-Accuracy RAG Pipeline**: Utilizes a precisely engineered prompt to force the LLM to answer questions based only on the retrieved context.
+-   **FastAPI Backend**: A robust and fast API server built with FastAPI.
+-   **LLM Integration**: Powered by Google's `gemini-1.5-flash-latest` model for generation.
+-   **State-of-the-Art Embeddings**: Employs Hugging Face's `sentence-transformers/all-MiniLM-L6-v2` for creating high-quality text embeddings.
 
 ## Technologies Used
 
-- **Python 3.x**
-- **FastAPI**: For building the API.
-- **LangChain**: As the framework for building the RAG application.
-- **Google Generative AI**: For the core language model (`gemini-1.5-flash-latest`).
-- **Hugging Face Transformers**: For sentence embeddings (`all-MiniLM-L6-v2`).
-- **AstraDB**: As the vector store for document embeddings.
-- **Pydantic**: For data validation.
-- **Uvicorn**: As the ASGI server.
-- **Render**: For deployment.
+-   **Python 3.x**
+-   **FastAPI**: For building the API.
+-   **LangChain**: As the framework for building the RAG application.
+-   **Google Generative AI**: For the core language model.
+-   **Hugging Face Transformers**: For sentence embeddings.
+-   **FAISS**: For the in-memory vector store.
+-   **Pydantic**: For data validation.
+-   **Uvicorn**: As the ASGI server.
+-   **Render**: For deployment.
 
 ## Setup and Installation
 
@@ -44,49 +46,37 @@ This project is a FastAPI-based API developed for the HackRx 6.0 hackathon. It i
     pip install -r requirements.txt
     ```
 
-4.  **Create a `.env` file** in the root directory and add the necessary environment variables (see below).
-
-## Environment Variables
-
-You need to create a `.env` file with the following variables:
-
-```
-ASTRA_DB_API_ENDPOINT="your_astra_db_api_endpoint"
-ASTRA_DB_APPLICATION_TOKEN="your_astra_db_application_token"
-```
+4.  **Create a `.env` file** in the root directory if you need to manage any API keys (e.g., for Google AI).
 
 ## API Endpoints
 
-### `POST /ask`
+### `POST /hackrx/run`
 
-This is the main endpoint for asking questions.
+This is the main endpoint for processing a document and asking questions.
 
 -   **Request Body**:
     ```json
     {
-      "question": "Your question here"
+      "documents": "URL_TO_YOUR_PDF_DOCUMENT",
+      "questions": [
+        "Your first question here",
+        "Your second question here"
+      ]
     }
     ```
 
 -   **Successful Response (200 OK)**:
     ```json
     {
-      "answer": "The generated answer.",
-      "source_documents": [
-        {
-          "page_content": "The content of the source document.",
-          "metadata": {}
-        }
+      "answers": [
+        "Answer to the first question.",
+        "Answer to the second question."
       ]
     }
     ```
 
--   **Error Response (500 Internal Server Error)**:
-    ```json
-    {
-      "detail": "RAG chain is not available due to a startup error."
-    }
-    ```
+-   **Error Response (400 Bad Request)**: If the document URL is invalid or inaccessible.
+-   **Error Response (500 Internal Server Error)**: For any other internal processing errors.
 
 ### `GET /`
 
@@ -95,7 +85,7 @@ A simple health check endpoint.
 -   **Response**:
     ```json
     {
-      "status": "API is online and ready."
+      "status": "High-Accuracy API is online and ready."
     }
     ```
 
