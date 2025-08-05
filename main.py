@@ -1,4 +1,5 @@
 import os
+import time
 import traceback
 import requests
 import tempfile
@@ -112,6 +113,8 @@ def answer_questions_from_url(doc_url: str, questions: List[str]) -> List[str]:
         for i, question in enumerate(questions):
             print(f"  - Answering question {i+1}: '{question}'")
             try:
+                # Adding a delay to respect API rate limits
+                time.sleep(1)
                 result = qa_chain.invoke({"query": question})
                 answers.append(result["result"].strip())
             except Exception as e:
