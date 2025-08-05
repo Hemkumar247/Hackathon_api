@@ -10,5 +10,5 @@ services:
         fromSecret: true
       - key: ASTRA_DB_APPLICATION_TOKEN
         fromSecret: true
-      - key: GOOGLE_API_KEY
+      - key: PERPLEXITY_API_KEY
         fromSecret: true

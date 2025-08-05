@@ -9,10 +9,9 @@ from typing import List, Dict, Any
 from dotenv import load_dotenv
 
 # Import LangChain components with the correct, modern paths
-from langchain_google_genai import GoogleGenerativeAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS # Using a fast, in-memory vector store
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
@@ -39,9 +38,18 @@ app = FastAPI(
 # We load the embedding model and LLM once to be reused for every request.
 try:
     print("--- STARTUP: Loading foundational models... ---")
-    embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    llm = GoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1) # Low temperature for factual answers
-    print("--- STARTUP: Foundational models loaded successfully. ---")
+    embedding_model = OpenAIEmbeddings(
+        model="em-sonora-96-retrieval", # Perplexity embedding model
+        openai_api_key=os.getenv("PERPLEXITY_API_KEY"),
+        base_url="https://api.perplexity.ai"
+    )
+    llm = ChatOpenAI(
+        model="llama-3-sonar-large-32k-online", # Using a powerful Perplexity model
+        temperature=0.1,
+        api_key=os.getenv("PERPLEXITY_API_KEY"), # Make sure to set this environment variable
+        base_url="https://api.perplexity.ai"
+    )
+    print("--- STARTUP: Foundational models (Perplexity AI) loaded successfully. ---")
 except Exception as e:
     print("\n--- FATAL STARTUP ERROR ---")
     traceback.print_exc()
