@@ -27,7 +27,7 @@ app = FastAPI(
 )
 
 # --- API Endpoint as specified by the Hackathon ---
-@app.post("/hackrx/run", response_model=HackathonResponse)
+@app.post("/api/v1/hackrx/run", response_model=HackathonResponse)
 async def run_qa(
     req: HackathonRequest,
     is_authenticated: bool = Depends(validate_token)
