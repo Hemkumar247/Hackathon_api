@@ -53,10 +53,6 @@ async def run_qa(
         print("-----------------------------------------\n")
         raise HTTPException(status_code=500, detail=f"An internal error occurred: {str(e)}")
     
-    
-
-    
-
 
 @app.get("/")
 def health_check():
