@@ -1,12 +1,21 @@
 # app/agents.py
-
+import os
+from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 from typing import Literal
 
+# Load environment variables from a .env file
+load_dotenv()
+
 # Initialize a single, powerful LLM to be used by all agents
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.0)
+# It now securely loads the API key from your environment
+llm = ChatGoogleGenerativeAI(
+    model="gemini-1.5-flash-latest",
+    temperature=0.0,
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 
 # --- 1. The Router Agent ---
 class QueryClassifier(BaseModel):
