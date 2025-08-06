@@ -9,14 +9,6 @@ from typing import Literal
 # Load environment variables from a .env file
 load_dotenv()
 
-# Initialize a single, powerful LLM to be used by all agents
-# It now securely loads the API key from your environment
-llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash-latest",
-    temperature=0.0,
-    google_api_key=os.getenv("GOOGLE_API_KEY")
-)
-
 # --- 1. The Router Agent ---
 class QueryClassifier(BaseModel):
     """Categorize the user's question."""
@@ -31,6 +23,12 @@ class QueryClassifier(BaseModel):
 
 def get_router_agent():
     """Creates the agent responsible for classifying questions."""
+    # Initialize the LLM inside the function to prevent startup errors
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-1.5-flash-latest",
+        temperature=0.0,
+        google_api_key=os.getenv("GOOGLE_API_KEY")
+    )
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", "You are an expert at analyzing insurance questions. Classify the user's query into one of the predefined categories. If the question does not fit any category, use 'fallback'."),
@@ -43,6 +41,12 @@ def get_router_agent():
 # --- 2. The Synthesizer Agent ---
 def get_synthesizer_agent():
     """Creates the agent responsible for generating the final answer."""
+    # Initialize the LLM inside the function to prevent startup errors
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-1.5-flash-latest",
+        temperature=0.0,
+        google_api_key=os.getenv("GOOGLE_API_KEY")
+    )
     QA_SYSTEM_PROMPT = """You are an expert insurance policy analyst. Your task is to provide accurate, specific answers based STRICTLY on the provided context.
 
 *INSTRUCTIONS:*
