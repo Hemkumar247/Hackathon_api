@@ -10,16 +10,18 @@ from typing import List
 from .agents import get_router_agent, get_synthesizer_agent
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
 
 # --- Load Foundational Embedding Model ---
 try:
     print("--- RAG Pipeline: Loading embedding model... ---")
-    embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    print("--- RAG Pipeline: Embedding model loaded successfully. ---")
-except Exception:
-    # ... (error handling) ...
+    # Using Google's embedding model, which uses the GOOGLE_API_KEY from the environment
+    embedding_model = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    print("--- RAG Pipeline: Google embedding model loaded successfully. ---")
+except Exception as e:
+    print(f"--- FATAL RAG ERROR: Could not load embedding model: {e} ---")
+    traceback.print_exc()
     embedding_model = None
 
 # --- Initialize the Agents ---

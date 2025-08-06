@@ -1,19 +1,27 @@
 #  This file handles all security-related logic, like validating the Bearer Token.
-
+import os
+from dotenv import load_dotenv
 from fastapi import HTTPException, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Optional
 
+# Load environment variables from your .env file
+load_dotenv()
+
 # Initialize the security scheme
 http_bearer = HTTPBearer()
 
-# This is the required token for the hackathon
-EXPECTED_TOKEN = "6e6de8c174e72f2501628ae7ddc119732bc8c34a72097f682a2bf339db673dd7"
+# Load the required token securely from the environment
+EXPECTED_TOKEN = os.getenv("HACKATHON_TOKEN")
 
 def validate_token(credentials: Optional[HTTPAuthorizationCredentials] = Security(http_bearer)):
     """
     Validates the Bearer Token from the Authorization header.
     """
+    if not EXPECTED_TOKEN:
+        # This is an important server-side check
+        raise HTTPException(status_code=500, detail="Security token not configured on the server.")
+
     if not credentials:
         raise HTTPException(
             status_code=401,

@@ -12,10 +12,11 @@ from .rag_pipeline import process_rag_query
 from datetime import datetime
 import logging
 # --- Initialize FastAPI App ---
+# Log to the console, which is standard for deployment platforms
 logging.basicConfig(
-    filename="requests.log",  # Log file name
-    level=logging.INFO,       # Log level
-    format="%(asctime)s - %(message)s"  # Log format
+    level=logging.INFO,
+    format="%(asctime)s - %(message)s",
+    handlers=[logging.StreamHandler()]
 )
 
 
