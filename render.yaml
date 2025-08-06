@@ -12,3 +12,5 @@ services:
         fromSecret: true
       - key: GOOGLE_API_KEY
         fromSecret: true
+      - key: HACKATHON_TOKEN
+        fromSecret: true
