@@ -6,11 +6,19 @@
 from fastapi import FastAPI, HTTPException, Depends
 import traceback
 # Import the different parts of our application
-from schemas import HackathonRequest, HackathonResponse
-from security import validate_token
-from rag_pipeline import process_rag_query
-
+from .schemas import HackathonRequest, HackathonResponse
+from .security import validate_token
+from .rag_pipeline import process_rag_query
+from datetime import datetime
+import logging
 # --- Initialize FastAPI App ---
+logging.basicConfig(
+    filename="requests.log",  # Log file name
+    level=logging.INFO,       # Log level
+    format="%(asctime)s - %(message)s"  # Log format
+)
+
+
 app = FastAPI(
     title="High-Accuracy HackRx RAG API",
     description="A modular and advanced RAG API for the HackRx 6.0 hackathon.",
@@ -30,6 +38,13 @@ async def run_qa(
     try:
         # Call the main processing function from our RAG pipeline
         answers = process_rag_query(req.documents, req.questions)
+
+        log_entry = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "documents": req.documents,
+        "questions": req.questions,
+        }
+        logging.info(f"Received request: {log_entry}")
         return HackathonResponse(answers=answers)
         
     except Exception as e:
@@ -37,6 +52,11 @@ async def run_qa(
         traceback.print_exc()
         print("-----------------------------------------\n")
         raise HTTPException(status_code=500, detail=f"An internal error occurred: {str(e)}")
+    
+    
+
+    
+
 
 @app.get("/")
 def health_check():
