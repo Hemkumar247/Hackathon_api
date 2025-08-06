@@ -25,14 +25,15 @@ class QueryClassifier(BaseModel):
         "coverage_limit",
         "exclusion_clause",
         "definition_of_terms",
-        "general_query"
+        "general_query",
+        "fallback"  # Add a fallback for unclassified questions
     ] = Field(description="The category of the user's insurance policy question.")
 
 def get_router_agent():
     """Creates the agent responsible for classifying questions."""
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", "You are an expert at analyzing insurance questions. Classify the user's query into one of the predefined categories."),
+            ("system", "You are an expert at analyzing insurance questions. Classify the user's query into one of the predefined categories. If the question does not fit any category, use 'fallback'."),
             ("human", "{question}")
         ]
     )

@@ -61,20 +61,22 @@ def process_rag_query(document_url: str, questions: List[str]) -> List[str]:
             query_type = route.query_type
             print(f"    -> Router classified as: {query_type}")
 
-            # Step B: Call the Searcher Agent (the retriever)
-            # Future improvement: You could have different search strategies
-            # based on the query_type. For now, we use a standard search.
-            relevant_docs = retriever.get_relevant_documents(question)
-            context = "\n\n".join([doc.page_content for doc in relevant_docs])
-            
-            # Step C: Call the Synthesizer Agent
-            result = synthesizer_agent.invoke({
-                "context": context,
-                "question": question
-            })
-            
-            # The result from this agent is a simple string, which is cleaner
-            answer = result.content.strip()
+            # Step B: Handle different query types
+            if query_type == "fallback":
+                answer = "I'm sorry, I can only answer questions about the provided document. Please ask a question relevant to the document's content."
+            else:
+                # For all other relevant queries, perform the RAG process
+                relevant_docs = retriever.get_relevant_documents(question)
+                context = "\n\n".join([doc.page_content for doc in relevant_docs])
+                
+                # Step C: Call the Synthesizer Agent
+                result = synthesizer_agent.invoke({
+                    "context": context,
+                    "question": question
+                })
+                
+                answer = result.content.strip()
+
             answers.append(answer)
             
         return answers
