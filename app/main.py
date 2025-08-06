@@ -5,7 +5,6 @@
 
 from fastapi import FastAPI, HTTPException, Depends
 import traceback
-
 # Import the different parts of our application
 from schemas import HackathonRequest, HackathonResponse
 from security import validate_token
